@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.PhoneMic" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/pm_primary</item>
+        <item name="colorOnPrimary">@color/pm_on_primary</item>
+        <item name="colorSecondary">@color/pm_secondary</item>
+        <item name="colorError">@color/pm_error</item>
+        <item name="android:colorBackground">@color/pm_background</item>
+        <item name="colorSurface">@color/pm_surface</item>
+        <item name="colorOnSurface">@color/pm_on_surface</item>
+        <item name="android:statusBarColor">@color/pm_background</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+</resources>

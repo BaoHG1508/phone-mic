@@ -1,0 +1,103 @@
+# Builds the release artifacts on GitHub runners and attaches them to an existing release.
+#
+# The normal path is to build locally and attach the signed APK yourself; see RELEASING.md.
+# This workflow is manual on purpose: a tag-triggered run would otherwise replace a locally
+# signed APK with a debug-signed one unless the signing secrets below are configured.
+name: Release artifacts
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to attach artifacts to, e.g. v1.0.0"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  android:
+    name: APK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag }}
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+      # Optional: set these repository secrets to publish a properly signed APK.
+      # Without them the release build falls back to the debug key.
+      - name: Restore keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "No signing secrets set; this build will use the debug key."
+            exit 0
+          fi
+          mkdir -p "$HOME/.phonemic-release"
+          printf '%s' "$KEYSTORE_BASE64" | base64 -d > "$HOME/.phonemic-release/phonemic-release.jks"
+          {
+            printf 'storeFile=%s\n' "$HOME/.phonemic-release/phonemic-release.jks"
+            printf 'storePassword=%s\n' "$STORE_PASSWORD"
+            printf 'keyAlias=%s\n' "$KEY_ALIAS"
+            printf 'keyPassword=%s\n' "$KEY_PASSWORD"
+          } > "$HOME/.phonemic-release/keystore.properties"
+      - name: Build release APK
+        working-directory: android
+        run: ./gradlew :app:assembleRelease
+      - name: Name the file
+        run: |
+          TAG="${{ inputs.tag }}"
+          cp android/app/build/outputs/apk/release/app-release.apk "PhoneMic-${TAG#v}.apk"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: apk
+          path: PhoneMic-*.apk
+
+  windows:
+    name: Windows receiver
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag }}
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '7.0.x'
+      - name: Publish
+        working-directory: pc-receiver-windows
+        run: >
+          dotnet publish src/PhoneMicReceiver/PhoneMicReceiver.csproj -c Release -r win-x64
+          --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
+          -p:EnableCompressionInSingleFile=true -p:DebugType=none -o ../dist/windows
+      - name: Name the file
+        shell: bash
+        run: |
+          TAG="${{ inputs.tag }}"
+          cp dist/windows/PhoneMicReceiver.exe "PhoneMicReceiver-${TAG#v}.exe"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: exe
+          path: PhoneMicReceiver-*.exe
+
+  publish:
+    name: Attach to release
+    needs: [android, windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.tag }}
+          files: |
+            PhoneMic-*.apk
+            PhoneMicReceiver-*.exe

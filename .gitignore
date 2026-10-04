@@ -1,0 +1,27 @@
+# Build outputs
+dist/
+build/
+**/build/
+**/bin/
+**/obj/
+.gradle/
+.kotlin/
+local.properties
+
+# Signing material: never commit keys
+*.jks
+*.keystore
+keystore.properties
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+pyenv/
+
+# Editors / OS
+.idea/
+.vs/
+*.user
+*.iml
+.DS_Store

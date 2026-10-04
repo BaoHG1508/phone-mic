@@ -1,0 +1,74 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  android:
+    name: Android app
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Unit tests
+        working-directory: android
+        run: ./gradlew :app:testDebugUnitTest
+      - name: Lint
+        working-directory: android
+        run: ./gradlew :app:lintDebug
+      - name: Build debug APK
+        working-directory: android
+        run: ./gradlew :app:assembleDebug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: phonemic-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+
+  receiver-core:
+    name: Receiver core tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '7.0.x'
+      - run: dotnet test src/PhoneMic.Core.Tests
+        working-directory: pc-receiver-windows
+
+  windows-receiver:
+    name: Windows receiver
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '7.0.x'
+      - name: Publish single file
+        working-directory: pc-receiver-windows
+        run: >
+          dotnet publish src/PhoneMicReceiver/PhoneMicReceiver.csproj -c Release -r win-x64
+          --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
+          -p:EnableCompressionInSingleFile=true -p:DebugType=none -o ../dist/windows
+      - uses: actions/upload-artifact@v4
+        with:
+          name: phonemic-receiver-windows
+          path: dist/windows/PhoneMicReceiver.exe
+
+  python-receiver:
+    name: Python receiver tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install numpy
+      - run: python -m unittest discover -s tests -v
+        working-directory: pc-receiver

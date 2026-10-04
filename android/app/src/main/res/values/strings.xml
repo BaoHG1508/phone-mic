@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">PhoneMic</string>
+    <string name="subtitle">Use this phone as a microphone for your PC</string>
+
+    <string name="section_connection">Connection</string>
+    <string name="section_audio">Audio</string>
+    <string name="section_status">Status</string>
+
+    <string name="label_phone_ip">This phone: %1$s</string>
+    <string name="label_phone_ip_unknown">This phone: no Wi-Fi address</string>
+    <string name="hint_pc_address">PC IP address (e.g. 192.168.1.20)</string>
+    <string name="hint_port">Port</string>
+    <string name="btn_find_pc">Find PC</string>
+    <string name="btn_start">Start microphone</string>
+    <string name="btn_stop">Stop</string>
+    <string name="btn_mute">Mute</string>
+    <string name="btn_unmute">Unmute</string>
+    <string name="btn_copy">Copy</string>
+
+    <string name="transport_wifi_udp">Wi-Fi (UDP, lowest latency)</string>
+    <string name="transport_wifi_tcp">Wi-Fi (TCP, reliable)</string>
+    <string name="transport_usb">USB cable (TCP via adb reverse)</string>
+    <string name="usb_help">USB mode: connect the cable, enable USB debugging, then run this on the PC before pressing Start:</string>
+    <string name="usb_command">adb reverse tcp:%1$d tcp:%1$d</string>
+
+    <string name="label_sample_rate">Sample rate</string>
+    <string name="label_channels">Channels</string>
+    <string name="label_source">Microphone source</string>
+    <string name="toggle_noise_suppression">Noise suppression</string>
+    <string name="toggle_agc">Automatic gain control</string>
+
+    <string name="status_idle">Idle</string>
+    <string name="status_starting">Starting…</string>
+    <string name="status_streaming">Streaming to %1$s</string>
+    <string name="status_streaming_no_pc">Streaming to %1$s — PC receiver not responding</string>
+    <string name="status_reconnecting">Reconnecting to %1$s…</string>
+    <string name="status_error">Error: %1$s</string>
+    <string name="status_muted_suffix"> (muted)</string>
+    <string name="stats_format" tools:ignore="PluralsCandidate">%1$d Hz · %2$s · %3$d kbit/s · %4$d packets · %5$s</string>
+
+    <string name="discovery_title">PCs found on this network</string>
+    <string name="discovery_searching">Searching for PC receivers…</string>
+    <string name="discovery_none">No PC receiver answered. Make sure the receiver is running on the PC and both devices are on the same network, or type the IP manually.</string>
+    <string name="discovery_cancel">Cancel</string>
+
+    <string name="error_permission">Microphone permission is required.</string>
+    <string name="error_invalid_address">Enter the PC IP address first (or use Find PC).</string>
+    <string name="error_invalid_port">Port must be between 1 and 65535.</string>
+    <string name="copied">Copied to clipboard</string>
+
+    <string name="notif_channel_name">Microphone streaming</string>
+    <string name="notif_channel_desc">Shown while the phone microphone is being sent to the PC</string>
+    <string name="notif_title">PhoneMic is streaming</string>
+    <string name="notif_text">Sending microphone to %1$s</string>
+    <string name="notif_stop">Stop</string>
+    <string name="notif_mute">Mute</string>
+    <string name="notif_unmute">Unmute</string>
+
+    <string name="mono">Mono</string>
+    <string name="stereo">Stereo</string>
+</resources>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="pm_primary">#6FA8FF</color>
+    <color name="pm_on_primary">#0B1B33</color>
+    <color name="pm_secondary">#3DD9A8</color>
+    <color name="pm_background">#0F141B</color>
+    <color name="pm_surface">#1A2230</color>
+    <color name="pm_on_surface">#E8EDF5</color>
+    <color name="pm_muted_text">#9AA5B5</color>
+    <color name="pm_error">#FF7B7B</color>
+    <color name="pm_meter_track">#2A3546</color>
+</resources>
